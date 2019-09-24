@@ -1,8 +1,8 @@
 version: 2.1
 jobs:
   build:
-    docker:
-      - image: alpine:3.7
+    machine:
+      enabled: true
     steps:
       - add_ssh_keys:
           fingerprints:
