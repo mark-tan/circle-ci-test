@@ -1,6 +1,6 @@
 version: 2.1
 jobs:
-  build:
+  deploy:
     machine:
       enabled: true
     steps:
@@ -17,3 +17,13 @@ jobs:
             else
               rsync -avuz testfolder $SSH_USER@$SSH_HOST:~/test/$CIRCLE_BRANCH/
             fi
+workflows:
+  version: 2
+  deploy:
+    jobs:
+      - deploy:
+          filters:
+            branches:
+              only:
+                - master
+                - /dev-.*/
