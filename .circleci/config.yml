@@ -10,5 +10,5 @@ jobs:
       - checkout
       - deploy:
           command: |
-            ssh $SSH_USER@$SSH_HOST mkdir -p ~/test
+            ssh $SSH_USER@$SSH_HOST mkdir -p /home/$SSH_USER/test
             rsync -avuz testfolder $SSH_USER@$SSH_HOST:~/test/$CIRCLE_BRANCH/
