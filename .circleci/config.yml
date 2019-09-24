@@ -13,9 +13,9 @@ jobs:
             ssh $SSH_USER@$SSH_HOST mkdir -p /home/$SSH_USER/test
             if [ $CIRCLE_BRANCH = master ]
             then
-              rsync -avuz testfolder $SSH_USER@$SSH_HOST:~/test/
+              rsync -avuz testfolder/ $SSH_USER@$SSH_HOST:~/test/
             else
-              rsync -avuz testfolder $SSH_USER@$SSH_HOST:~/test/$CIRCLE_BRANCH/
+              rsync -avuz testfolder/ $SSH_USER@$SSH_HOST:~/test/$CIRCLE_BRANCH/
             fi
 workflows:
   version: 2
