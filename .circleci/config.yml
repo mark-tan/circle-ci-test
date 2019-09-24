@@ -11,4 +11,4 @@ jobs:
       - run:
           name: Transfer file
           command: |
-            scp test.txt $SSH_USER@$SSH_HOST:~/test/
+            scp -r testfolder $SSH_USER@$SSH_HOST:~/test/
