@@ -10,7 +10,11 @@ jobs:
       - checkout
       - deploy:
           command: |
-            ssh $SSH_USER@$SSH_HOST mkdir -p /home/$SSH_USER/test
+            ssh $SSH_USER@$SSH_HOST << EOF
+              mkdir -p /home/$SSH_USER/test
+              cd /home/$SSH_USER/test
+              find . -type d -not -regex $(git branch -r | grep origin/ | sed -e 's/^  origin\//\\\.\//' | sed -e 's/ ->.*//' | sed -e 's/$/\$\\/' | tr '\n' '|' | sed -e 's/\\|$//') -not -path . -delete
+            EOF
             if [ $CIRCLE_BRANCH = master ]
             then
               rsync -avuz testfolder/ $SSH_USER@$SSH_HOST:~/test/
