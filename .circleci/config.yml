@@ -10,10 +10,11 @@ jobs:
       - checkout
       - deploy:
           command: |
+            BRANCHES_REGEX=$(git branch -r | grep origin/ | sed -e 's/^  origin\//\\\.\//' | sed -e 's/ ->.*//' | sed -e 's/$/\$\\/' | tr '\n' '|' | sed -e 's/\\|$//')
             ssh $SSH_USER@$SSH_HOST \<< EOF
               mkdir -p /home/$SSH_USER/test
               cd /home/$SSH_USER/test
-              find . -type d -not -regex $(git branch -r | grep origin/ | sed -e 's/^  origin\//\\\.\//' | sed -e 's/ ->.*//' | sed -e 's/$/\$\\/' | tr '\n' '|' | sed -e 's/\\|$//') -not -path . -delete
+              find . -type d -not -regex $BRANCHES_REGEX -not -path . -print0 | xargs -0 -I {} rm -rf {}
             EOF
             if [ $CIRCLE_BRANCH = master ]
             then
