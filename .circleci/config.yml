@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   deploy:
     docker:
-      image: buildpack-deps:bionic
+      - image: buildpack-deps:bionic
     steps:
       - add_ssh_keys:
           fingerprints:
