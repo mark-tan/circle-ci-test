@@ -1,8 +1,8 @@
 version: 2.1
 jobs:
   deploy:
-    docker:
-      - image: buildpack-deps:bionic
+    machine:
+      enabled: true
     steps:
       - add_ssh_keys:
           fingerprints:
@@ -10,18 +10,18 @@ jobs:
       - checkout
       - deploy:
           command: |
+            DAGS_PATH=testfolder/
             BRANCHES_REGEX=$(git branch -r | grep origin/ | sed -e 's/^  origin\//\\\.\//' | sed -e 's/ ->.*//' | sed -e 's/$/\$\\/' | tr '\n' '|' | sed -e 's/\\|$//')
-            ssh -o "StrictHostKeyChecking=no" $SSH_USER@$SSH_HOST \<< EOF
+            ssh $SSH_USER@$SSH_HOST \<< EOF
               mkdir -p /home/$SSH_USER/test
               cd /home/$SSH_USER/test
-              find . -type d -not -regex $BRANCHES_REGEX -not -path . -print0 | xargs -0 -I {} rm -rf {}
+              find . -type d -not -regex $BRANCHES_REGEX -not -path . -print0 | xargs -0 -I {}/$CIRCLE_PROJECT_REPONAME rm -rf {}
             EOF
-            if [ $CIRCLE_BRANCH = master ]
-            then
-              rsync -avuz testfolder/ $SSH_USER@$SSH_HOST:~/test/
-            else
-              rsync -avuz testfolder/ $SSH_USER@$SSH_HOST:~/test/$CIRCLE_BRANCH/
-            fi
+            for DAG in $DAGS_PATH*.py
+            do
+              sed -i '1s|^|import sys, pathlib\nsys.path.append(str(pathlib.Path(__file__).parent))\n|' $DAG
+            done
+            rsync -avuz $DAGS_PATH $SSH_USER@$SSH_HOST:~/test/$CIRCLE_BRANCH/$CIRCLE_PROJECT_REPONAME
 workflows:
   version: 2
   deploy:
