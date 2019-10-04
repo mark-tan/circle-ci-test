@@ -19,10 +19,7 @@ jobs:
               find . -type d -not -regex $BRANCHES_REGEX -not -path . -print0 | xargs -0 -I {}/$CIRCLE_PROJECT_REPONAME rm -rf {}
               mkdir -p $REMOTE_DAGS_PATH/$CIRCLE_BRANCH/$CIRCLE_PROJECT_REPONAME
             EOF
-            for DAG in $DAGS_PATH/*.py
-            do
-              sed -i '1s|^|import sys, pathlib\nsys.path.append(str(pathlib.Path(__file__).parent))\n|' $DAG
-            done
+            find $DAGS_PATH/ -type f -name "*.py" -print0 | xargs -0 -I {} sed -i '1s|^|import sys, pathlib\nsys.path.append(str(pathlib.Path(__file__).parent))\n|' {}
             rsync -avuz $DAGS_PATH/ $SSH_USER@$SSH_HOST:~/test/$CIRCLE_BRANCH/$CIRCLE_PROJECT_REPONAME
 workflows:
   version: 2
