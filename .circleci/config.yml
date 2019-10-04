@@ -10,18 +10,20 @@ jobs:
       - checkout
       - deploy:
           command: |
-            DAGS_PATH=testfolder/
+            DAGS_PATH=testfolder
+            REMOTE_DAGS_PATH=/home/$SSH_USER/test
             BRANCHES_REGEX=$(git branch -r | grep origin/ | sed -e 's/^  origin\//\\\.\//' | sed -e 's/ ->.*//' | sed -e 's/$/\$\\/' | tr '\n' '|' | sed -e 's/\\|$//')
             ssh $SSH_USER@$SSH_HOST \<< EOF
-              mkdir -p /home/$SSH_USER/test
-              cd /home/$SSH_USER/test
+              mkdir -p $REMOTE_DAGS_PATH
+              cd $REMOTE_DAGS_PATH
               find . -type d -not -regex $BRANCHES_REGEX -not -path . -print0 | xargs -0 -I {}/$CIRCLE_PROJECT_REPONAME rm -rf {}
+              mkdir -p $REMOTE_DAGS_PATH/$CIRCLE_BRANCH/$CIRCLE_PROJECT_REPONAME
             EOF
-            for DAG in $DAGS_PATH*.py
+            for DAG in $DAGS_PATH/*.py
             do
               sed -i '1s|^|import sys, pathlib\nsys.path.append(str(pathlib.Path(__file__).parent))\n|' $DAG
             done
-            rsync -avuz $DAGS_PATH $SSH_USER@$SSH_HOST:~/test/$CIRCLE_BRANCH/$CIRCLE_PROJECT_REPONAME
+            rsync -avuz $DAGS_PATH/ $SSH_USER@$SSH_HOST:~/test/$CIRCLE_BRANCH/$CIRCLE_PROJECT_REPONAME
 workflows:
   version: 2
   deploy:
