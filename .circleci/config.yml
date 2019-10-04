@@ -12,11 +12,11 @@ jobs:
           command: |
             DAGS_PATH=testfolder
             REMOTE_DAGS_PATH=/home/$SSH_USER/test
-            BRANCHES_REGEX=$(git branch -r | grep origin/ | sed -e 's/^  origin\//\\\.\//' | sed -e 's/ ->.*//' | sed -e 's/$/\$\\/' | tr '\n' '|' | sed -e 's/\\|$//')
+            BRANCHES_REGEX=$(git branch -r | grep origin/ | sed -e 's/ ->.*//' | sed -e 's/^  origin\//\\\.\//' | sed -e 's|\(.*\)|\1\$\\\n\1/.*\\|' | tr '\n' '|' | sed -e 's/\\|$//')
             ssh $SSH_USER@$SSH_HOST \<< EOF
               mkdir -p $REMOTE_DAGS_PATH
               cd $REMOTE_DAGS_PATH
-              find . -type d -not -regex $BRANCHES_REGEX -not -path . -print0 | xargs -0 -I {} rm -rf {}
+              find . -type d -not -regex '$BRANCHES_REGEX' -not -path . -print0 -path ./*/$CIRCLE_PROJECT_REPONAME | xargs -0 -I {} rm -rf {}
               mkdir -p $REMOTE_DAGS_PATH/$CIRCLE_BRANCH/$CIRCLE_PROJECT_REPONAME
             EOF
             find $DAGS_PATH/ -type f -name "*.py" -print0 | xargs -0 -I {} sed -i '1s|^|import sys, pathlib\nsys.path.append(str(pathlib.Path(__file__).parent))\n|' {}
