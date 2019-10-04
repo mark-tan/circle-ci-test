@@ -12,7 +12,7 @@ jobs:
           command: |
             DAGS_PATH=testfolder
             REMOTE_DAGS_PATH=/home/$SSH_USER/test
-            BRANCHES_REGEX=$(git branch -r | grep origin/ | sed -e 's/^  origin\//\\\.\//' | sed -e 's/ ->.*//' | sed -e 's/$/\$\\/' | tr '\n' '|' | sed -e 's/\\|$//')
+            BRANCHES_REGEX=$(git branch -r | grep origin/ | sed -e 's/^  origin\//\\\.\//' | sed -e 's/ ->.*//' | sed -e 's|$|/$CIRCLE_PROJECT_REPONAME\$\\|' | tr '\n' '|' | sed -e 's/\\|$//')
             ssh $SSH_USER@$SSH_HOST \<< EOF
               mkdir -p $REMOTE_DAGS_PATH
               cd $REMOTE_DAGS_PATH
