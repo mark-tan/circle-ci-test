@@ -1,0 +1,41 @@
+name: mp_env
+dependencies:
+ - python=3.7.*
+ - ipython
+ - jupyter
+ - numpy=1.15.*  # there's a bug in interaction between numpy 1.16 and scikit-image
+ - pandas
+ - scikit-learn
+ - scipy
+ - xlrd # useful for opening some excel geo data files from web
+ - matplotlib
+ - psycopg2
+ - scikit-image
+ - sqlalchemy
+ - pip
+ - pycodestyle
+ - pytest
+ - typing
+ - requests
+ - pytest-mock
+ - elasticsearch
+ - gdal=2.3.3 # "unable to open" gcs.csv bug in later versions
+ - git
+ - black
+ - seaborn
+
+ - pip:
+   - Shapely==1.6.4.post2
+   - python-dotenv
+   - geoalchemy2
+   - apache-airflow[s3,postgres,celery,google_auth]
+   - celery[redis]
+   - rasterio>=1.0.24 # new shapely has the epsg data
+   - geopandas # needs to be installed with pip to prevent seg errors
+   - testing.postgresql
+   - Flask==1.0.4 # This is done in order to get Airflow to work. It is incompatible with latest Flask
+   - pytest-pgsql
+   - pgmock
+   - pyproj==1.9.6 # pyproj >= 2 is extremely slow for certain operations. Using 1.9.6 until we figure out how to use 2
+   - gitpython
+   - moto

@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  webserver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: airflow webserver --pid /tmp/airflow-webserver.pid
+    env_file:
+      - .env
+    volumes:
+      - .:/root/airflow
+    ports:
+      - 8080:8080
